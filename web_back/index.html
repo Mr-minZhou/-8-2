@@ -112,7 +112,18 @@
                  }
              });
 
-             
+             $('.icon-tuichu').parent().on('click',function(e){
+                 e.preventDefault();
+                 $.ajax({
+                     type:'post',
+                     url:'http://localhost:8080/admin/user/logout',
+                     success:function(backData){
+                        if (backData.code==200) {
+                            window.location.href='login.html';
+                        }
+                     }
+                 });
+             });
         });
     </script>
 
