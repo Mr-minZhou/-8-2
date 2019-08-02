@@ -101,7 +101,19 @@
               $('.level02').children().eq(n).addClass('active').siblings().removeClass('active');
            }
         }
+         $(function(){
+             $.ajax({
+                 type:'get',
+                 url:'http://localhost:8080/admin/user/info',
+                 success:function(backData){
+                     $('.user_info>img').attr('src',backData.data.userPic);
+                     $('.user_info>span').html('欢迎&nbsp;&nbsp;'+backData.data.nickname);
+                     $('.user_center_link>img').attr('src',backData.data.userPic);
+                 }
+             });
 
+             
+        });
     </script>
 
 </body>

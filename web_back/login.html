@@ -9,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="css/reset.css">
     <link rel="stylesheet" type="text/css" href="css/iconfont.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
+    <script src="./js/jquery-1.12.4.min.js"></script>
 </head>
 
 <body>
@@ -30,7 +31,37 @@
         </div>
 
     </div> 
+<script>
 
+ $(function(){
+     $('.input_sub').on('click',function(e){
+         e.preventDefault();
+        var userName=$('.input_txt').val();
+        var passWord=$('.input_pass').val();
+         if (!userName||!passWord) {
+             alert('账号或密码不能为空');
+         }else{
+             $.ajax({
+                 type:'post',
+                 url:'http://localhost:8080/admin/user/login',
+                 data:{
+                    username:userName,
+                    password:passWord
+                 },
+                 success:function(backData){
+                     if (backData.code==200) {
+                         window.location.href='index.html';
+                     }else{
+                         alert('账号或密码错误!'); 
+                     }
+                    
+                 }
+             });
+         }
+     })
+});
+
+</script>
 </body>
 
 </html>
