@@ -100,6 +100,7 @@
                     success: function (backData) {
                         if (backData.code == 200) {
                             alert('修改成功');
+                            console.log(parent);
                             parent.window.location.reload();
 
                             //解决方案二: 再重新发送ajax请求,获取修改后的用户信息,显示在首页对应的标签上.
