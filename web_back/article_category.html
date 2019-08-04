@@ -72,7 +72,8 @@
                 <tfoot>
                     <tr>
                         <td colspan="3" class="text-center">
-                            <a href="#" class="btn btn-success" data-toggle="modal" data-target="#addModal">新增分类</a>
+                            <a href="#" class="btn btn-success add-class" data-toggle="modal"
+                                data-target="#addModal">新增分类</a>
                         </td>
                     </tr>
                 </tfoot>
@@ -90,6 +91,7 @@
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
+                            <input type="hidden" class="articleId">
                             <label for="recipient-name" class="control-label">分类名称:</label>
                             <input type="text" class="form-control articleName" id="recipient-name">
                         </div>
@@ -101,7 +103,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" id="model_shutoff">关闭</button>
-                    <button type="button" class="btn btn-primary" id="model_add">新增</button>
+                    <button type="button" class="btn btn-primary model-btn" id="model_add">新增</button>
                 </div>
             </div>
         </div>
@@ -116,7 +118,7 @@
             <td>{{v.name}}</td>
             <td>{{v.slug}}</td>
             <td class="text-center">
-                <a href="javascript:editTr({&quot;id&quot;:&quot;4&quot;,&quot;slug&quot;:&quot;travel&quot;,&quot;name&quot;:&quot;&quot;});"
+                <a href="javascript:void(0);"
                     class="btn btn-info btn-xs">编辑</a>
                 <a href="#" data-id="{{v.id}}" class="btn btn-danger btn-xs btn-del">删除</a>
             </td>
@@ -147,12 +149,12 @@
             $('#addModal').modal('hide');
         });
 
-        $('.category_table').delegate('a', 'click', function () {
-            if ($(this).hasClass('btn-info')) {
-                $('#addModal .modal-title').html('修改分类名称');
-                $('#addModal').modal('show');
-            }
-        })
+        // $('.category_table').delegate('a', 'click', function () {
+        //     if ($(this).hasClass('btn-info')) {
+        //         $('#addModal .modal-title').html('修改分类名称');
+        //         $('#addModal').modal('show');
+        //     }
+        // })
 
         //进入页面显示
         $(function () {
@@ -169,26 +171,71 @@
             };
             load();
 
-            //新增类别
-            $('#model_add').click(function () {
-                var articleName = $('.articleName').val().trim();
-                var articleSlug = $('.articleSlug').val().trim();
-                var addData = {
-                    name: articleName,
-                    slug: articleSlug
-                };
-                $.ajax({
-                    type: 'post',
-                    url: 'http://localhost:8080/admin/category/add',
-                    data: addData,
-                    success: function (backData) {
-                        if (backData.code == 201) {
-                            alert('新增成功');
-                            $('#addModal').modal('hide');
-                            load();
+            $('.add-class').on('click', function () {
+                $('.modal-title').text('新增分类');
+                $('.model-btn').text('新增').addClass('btn-success');
+                $('.articleName').val('');
+                $('.articleSlug').val('');
+
+            });
+
+            var that = null;
+            $('tbody').on('click', '.btn-info', function () {
+                that = this;
+                $('.modal-title').text('修改分类');
+                $('.model-btn').text('修改').removeClass('btn-success');
+                var articleId = $(this).next().attr('data-id');
+                var articleName = $(this).parent().prev().prev().text();
+                var articleSlug = $(this).parent().prev().text();
+                $('.articleId').val(articleId);
+                $('.articleName').val(articleName);
+                $('.articleSlug').val(articleSlug);
+                $('#addModal').modal('show');
+            });
+
+            //增改类别
+            $('.model-btn').click(function () {
+                if ($('.model-btn').hasClass('btn-success')) {
+                    var articleName = $('.articleName').val().trim();
+                    var articleSlug = $('.articleSlug').val().trim();
+                    var addData = {
+                        name: articleName,
+                        slug: articleSlug
+                    };
+                    $.ajax({
+                        type: 'post',
+                        url: 'http://localhost:8080/admin/category/add',
+                        data: addData,
+                        success: function (backData) {
+                            if (backData.code == 201) {
+                                alert('新增成功');
+                                $('#addModal').modal('hide');
+                                load();
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    var id = $('.articleId').val();
+                    var name = $('.articleName').val().trim();
+                    var slug = $('.articleSlug').val().trim();
+                    $.ajax({
+                        type: 'post',
+                        url: 'http://localhost:8080/admin/category/edit',
+                        data: {
+                            id: id,
+                            name: name,
+                            slug: slug
+                        },
+                        success: function (backData) {
+                            if (backData.code == 200) {
+                                $('#addModal').modal('hide');
+                                $(that).parent().prev().prev().text(name);
+                                $(that).parent().prev().text(slug);
+                            }
+
+                        }
+                    });
+                }
             });
 
             //删除类别
